@@ -18,3 +18,5 @@ models
 
 *.pyc
 Python/.idea/other.xml
+
+logs/fit
