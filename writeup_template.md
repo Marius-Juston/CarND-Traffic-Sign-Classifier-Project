@@ -19,9 +19,9 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./examples/visualization.jpg "Visualization"
-[image2]: ./examples/grayscale.jpg "Grayscaling"
-[image3]: ./examples/random_noise.jpg "Random Noise"
+[image1]: ./project_report/histogram.png "Visualization"
+[image2]: ./project_report/before_image.png "Visualization"
+[image3]: ./project_report/augmented_image.jpg "Visualization"
 [image4]: ./examples/placeholder.png "Traffic Sign 1"
 [image5]: ./examples/placeholder.png "Traffic Sign 2"
 [image6]: ./examples/placeholder.png "Traffic Sign 3"
@@ -45,11 +45,37 @@ You're reading it! and here is a link to my [project code](https://github.com/ud
 I used the pandas library to calculate summary statistics of the traffic
 signs data set:
 
-* The size of training set is ?
-* The size of the validation set is ?
-* The size of test set is ?
-* The shape of a traffic sign image is ?
-* The number of unique classes/labels in the data set is ?
+```python
+# Load pickled data
+import pickle
+
+training_file = 'data/train.p'
+validation_file= 'data/valid.p'
+testing_file = 'data/test.p'
+
+with open(training_file, mode='rb') as f:
+    train = pickle.load(f)
+with open(validation_file, mode='rb') as f:
+    valid = pickle.load(f)
+with open(testing_file, mode='rb') as f:
+    test = pickle.load(f)
+    
+X_train, y_train = train['features'], train['labels']
+X_valid, y_valid = valid['features'], valid['labels']
+X_test, y_test = test['features'], test['labels']
+
+n_train = train['features'].shape[0]
+n_validation = valid['features'].shape[0]
+n_test = test['features'].shape[0]
+image_shape = train['features'][0].shape
+n_classes = y_train.max() + 1
+```
+
+* The size of training set is 34799
+* The size of the validation set is 12630
+* The size of test set is 12630
+* The shape of a traffic sign image is `(32, 32, 3)`
+* The number of unique classes/labels in the data set is 43
 
 #### 2. Include an exploratory visualization of the dataset.
 
@@ -61,40 +87,51 @@ Here is an exploratory visualization of the data set. It is a bar chart showing 
 
 #### 1. Describe how you preprocessed the image data. What techniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc. (OPTIONAL: As described in the "Stand Out Suggestions" part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, and provide example images of the additional data. Then describe the characteristics of the augmented training set like number of images in the set, number of images for each class, etc.)
 
-As a first step, I decided to convert the images to grayscale because ...
+I actually did not perform any preprocessing to the images; however, I did implement some image augmentation. This included 
 
-Here is an example of a traffic sign image before and after grayscaling.
+| Original        | Augmented   | 
+|:-------------:|:-------------:| 
+| ![alt text][image2] | ![alt text][image3] | 
 
-![alt text][image2]
-
-As a last step, I normalized the image data because ...
-
-I decided to generate additional data because ... 
-
-To add more data to the the data set, I used the following techniques because ... 
-
-Here is an example of an original image and an augmented image:
-
-![alt text][image3]
-
-The difference between the original data set and the augmented data set is the following ... 
+The difference between the original data set and the augmented data set is the following, the image has:
+* a rotation range of [-15, 15] degrees, 
+* a zoom of [1.15, 0.85] image zoom, 
+* a horizontal shift of [-0.1,0.1],
+* a vertical shift of [-0.1,0.1], 
+* a shear (a tilt in image) [1.15, 0.85]
+* a brightness level change from [.2, 1] 
 
 
 #### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
 My final model consisted of the following layers:
 
-| Layer         		|     Description	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| Input         		| 32x32x3 RGB image   							| 
-| Convolution 3x3     	| 1x1 stride, same padding, outputs 32x32x64 	|
-| RELU					|												|
-| Max pooling	      	| 2x2 stride,  outputs 16x16x64 				|
-| Convolution 3x3	    | etc.      									|
-| Fully connected		| etc.        									|
-| Softmax				| etc.        									|
-|						|												|
-|						|												|
+| Layer (type)                 | Output Shape             | Param #   |
+|:----------------------------:|:------------------------:|:---------:| 
+| conv2d (Conv2D)              | (None, 32, 32, 8)        | 224       |      
+| batch_normalization (BatchNo | (None, 32, 32, 8)        | 32        |
+| max_pooling2d (MaxPooling2D) | (None, 16, 16, 8)        | 0         | 
+| conv2d_1 (Conv2D)            | (None, 16, 16, 16)       | 1168      |  
+| batch_normalization_1 (Batch | (None, 16, 16, 16)       | 64        |  
+| max_pooling2d_1 (MaxPooling2 | (None, 8, 8, 16)         | 0         |    
+| conv2d_2 (Conv2D)            | (None, 8, 8, 32)         | 4640      |   
+| batch_normalization_2 (Batch | (None, 8, 8, 32)         | 128       |   
+| max_pooling2d_2 (MaxPooling2 | (None, 4, 4, 32)         | 0         | 
+| flatten (Flatten)            | (None, 512)              | 0         | 
+| dense (Dense)                | (None, 256)              | 131328    |
+| batch_normalization_3 (Batch | (None, 256)              | 1024      |  
+| dropout (Dropout)            | (None, 256)              | 0         |
+| dense_1 (Dense)              | (None, 128)              | 32896     | 
+| batch_normalization_4 (Batch | (None, 128)              | 512       | 
+| dropout_1 (Dropout)          | (None, 128)              | 0         | 
+| dense_2 (Dense)              | (None, 43)               | 5547      |  
+_________________________________________________________________
+Total params: 177,563
+
+Trainable params: 176,683
+
+Non-trainable params: 880
+_________________________________________________________________
  
 
 
