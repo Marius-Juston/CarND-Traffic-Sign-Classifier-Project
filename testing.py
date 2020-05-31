@@ -29,7 +29,9 @@ if __name__ == '__main__':
 
     top_n_predictions = tf.nn.top_k(predictions, k=N)
 
-    print(top_n_predictions)
+    print(top_n_predictions.values)
+    print()
+    print(np.around(top_n_predictions.values.numpy() * 100, 1))
 
     string_predictions = np.vectorize(lambda index: signs[index])(top_n_predictions.indices.numpy())
 
