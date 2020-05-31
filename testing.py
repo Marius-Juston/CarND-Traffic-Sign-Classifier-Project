@@ -22,6 +22,15 @@ if __name__ == '__main__':
             for filename in os.listdir(image_folder)])
 
     new_model = tf.keras.models.load_model('model20200530-211606/')
-    indices = np.argmax(new_model.predict(tf.convert_to_tensor(image), batch_size=64), axis=1)
 
-    print(np.fromiter((signs[xi] for xi in indices), 'U50'))
+    predictions: np.ndarray = new_model.predict(tf.convert_to_tensor(image), batch_size=64)
+
+    N = 5
+
+    top_n_predictions = tf.nn.top_k(predictions, k=N)
+
+    print(top_n_predictions)
+
+    string_predictions = np.vectorize(lambda index: signs[index])(top_n_predictions.indices.numpy())
+
+    print(string_predictions)
