@@ -42,9 +42,8 @@ if __name__ == '__main__':
     plt.show()
 
     images = preprocess_images(X_train)
-
-    plt.imshow(image[index])
-    plt.show()
-
     print(images.shape)
     print(images.dtype)
+
+    plt.imshow(images[index])
+    plt.show()
