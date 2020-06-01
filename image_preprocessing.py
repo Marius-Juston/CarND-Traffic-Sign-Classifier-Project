@@ -25,8 +25,8 @@ def preprocess_images(images):
     return np.array(list(preprocess(image) for image in images))
 
 
-def save_images(images_numpy, output_file_name):
-    np.save(output_file_name, images_numpy)
+def save_images(x, y, output_file_name):
+    np.savez(output_file_name, x=x, y=y)
 
 
 def load_images(input_file_name):
@@ -34,7 +34,7 @@ def load_images(input_file_name):
 
 
 if __name__ == '__main__':
-    file_ = 'test'
+    file_ = 'train'
 
     training_file = f'data/{file_}.p'
 
@@ -56,11 +56,11 @@ if __name__ == '__main__':
     plt.imshow(image)
     plt.show()
 
-    images = preprocess_images(X_train)
-    save_images(images, f"data/{file_}")
-
-    print(images.shape)
-    print(images.dtype)
-
-    plt.imshow(images[index])
-    plt.show()
+    # images = preprocess_images(X_train)
+    # save_images(images, y_train, f"data/{file_}")
+    #
+    # print(images.shape)
+    # print(images.dtype)
+    #
+    # plt.imshow(images[index])
+    # plt.show()
